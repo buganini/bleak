@@ -19,6 +19,7 @@ from CoreBluetooth import CBPeripheral
 from Foundation import NSBundle
 
 from ...exc import BleakError
+from ..device import BLEDevice
 from ..scanner import AdvertisementData, AdvertisementDataCallback, BaseBleakScanner
 from .CentralManagerDelegate import CentralManagerDelegate
 from .utils import cb_uuid_to_str
@@ -191,5 +192,23 @@ class BleakScannerCoreBluetooth(BaseBleakScanner):
         except Exception:
             return None
 
-    def retrieveConnectedPeripheralsWithServices(self, services: Union[List[str], List[uuid.UUID]]):
-        return self._manager.central_manager.retrieveConnectedPeripheralsWithServices_(NSArray.alloc().initWithArray_(list(map(CBUUID.UUIDWithString_, services))))
+    def retrieveConnectedPeripheralsWithServices(self, services: Union[List[str], List[uuid.UUID]]) -> [BLEDevice]:
+        devices = []
+        for p in self._manager.central_manager.retrieveConnectedPeripheralsWithServices_(NSArray.alloc().initWithArray_(list(map(CBUUID.UUIDWithString_, services)))):
+            if self._use_bdaddr:
+                # HACK: retrieveAddressForPeripheral_ is undocumented but seems to do the trick
+                address_bytes: bytes = (
+                    self._manager.central_manager.retrieveAddressForPeripheral_(p)
+                )
+                address = address_bytes.hex(":").upper()
+            else:
+                address = p.identifier().UUIDString()
+
+            device = self.create_or_update_device(
+                address,
+                p.name(),
+                (p, self._manager.central_manager.delegate()),
+                AdvertisementData(local_name=p.name(), manufacturer_data=None, service_data=None, service_uuids=None, tx_power=None, rssi=None, platform_data=None),
+            )
+            devices.append(device)
+        return devices
