@@ -12,7 +12,7 @@ import sys
 sys.path.append("..")
 import asyncio
 
-from bleak import BleakScanner
+from bleak import BleakScanner, BleakClient
 
 
 async def main(services):
@@ -20,8 +20,18 @@ async def main(services):
         pass
 
     scanner = BleakScanner(onDiscovered)
-    for d in scanner.retrieveConnectedPeripheralsWithServices(services):
+    devices = scanner.retrieveConnectedPeripheralsWithServices(services)
+    for d in devices:
         print(d)
+
+    if devices:
+        client = BleakClient(devices[0], lambda *args: None)
+        await client.connect()
+        for service in client.services:
+            print(service)
+            for char in service.characteristics:
+                print("  ", char)
+        await client.disconnect()
 
 if __name__ == "__main__":
     asyncio.run(main([
