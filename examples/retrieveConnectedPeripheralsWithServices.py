@@ -20,11 +20,10 @@ async def main(services):
         pass
 
     scanner = BleakScanner(onDiscovered)
-    print(scanner.retrieveConnectedPeripheralsWithServices(services))
     for d in scanner.retrieveConnectedPeripheralsWithServices(services):
         print(d)
 
 if __name__ == "__main__":
     asyncio.run(main([
-        '000000FF-0000-1000-8000-00805F9B34FB',
+        '00FF',
     ]))
