@@ -1,10 +1,10 @@
 """
-Scan/Discovery
+retrieveConnectedPeripheralsWithServices
 --------------
 
-Example showing how to scan for BLE devices.
+Example retrieving connected device with services uuid
 
-Updated on 2019-03-25 by hbldh <henrik.blidh@nedomkull.com>
+Updated on 2023-05-04 by Buganini Chiu <buganini@b612.tw>
 
 """
 
