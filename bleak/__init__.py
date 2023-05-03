@@ -373,6 +373,9 @@ class BleakScanner:
             except asyncio.TimeoutError:
                 return None
 
+    def retrieveConnectedPeripheralsWithServices(self, services: Union[List[str], List[uuid.UUID]]):
+        return self._backend.retrieveConnectedPeripheralsWithServices(list(map(normalize_uuid_str, services)))
+
 
 class BleakClient:
     """The Client interface for connecting to a specific BLE GATT server and communicating with it.

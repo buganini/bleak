@@ -1,6 +1,13 @@
 import logging
+import uuid
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
+
+
+from CoreBluetooth import (
+    CBUUID,
+)
+from Foundation import NSArray
 
 if sys.version_info[:2] < (3, 8):
     from typing_extensions import Literal, TypedDict
@@ -183,3 +190,6 @@ class BleakScannerCoreBluetooth(BaseBleakScanner):
             return self._manager.isScanning_
         except Exception:
             return None
+
+    def retrieveConnectedPeripheralsWithServices(self, services: Union[List[str], List[uuid.UUID]]):
+        return self._manager.central_manager.retrieveConnectedPeripheralsWithServices_(NSArray.alloc().initWithArray_(list(map(CBUUID.UUIDWithString_, services))))
