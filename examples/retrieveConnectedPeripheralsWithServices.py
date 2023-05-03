@@ -23,9 +23,7 @@ async def main(services):
     devices = scanner.retrieveConnectedPeripheralsWithServices(services)
     for d in devices:
         print(d)
-
-    if devices:
-        client = BleakClient(devices[0], lambda *args: None)
+        client = BleakClient(d, lambda *args: None)
         await client.connect()
         for service in client.services:
             print(service)
